@@ -28,13 +28,16 @@ if ~exist(figfolder,'dir')
 end
 
 if includeDate
-   figname = [figname,date];
+   figname = [figname,'_',date];
 end
 %set(gcf,'TickDir','out')
 
+%if strcmp(figtype,'jpg')
 set(gcf,'PaperOrientation','landscape');
+%end
 set(gcf,'PaperUnits','normalized');
 set(gcf,'PaperPosition',[0 0 1 1]);
+%orient portrait
 saveas(gcf,[figfolder,'/',baseName,'_',figname,'.',figtype],figtype) ;
 
 end
