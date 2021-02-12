@@ -1,4 +1,4 @@
-function [xPoints, yPoints] = plotSpikeRaster(spikes,varargin)
+function [xPoints, yPoints, plotHandle] = plotSpikeRaster(spikes,varargin)
 % PLOTSPIKERASTER Create raster plot from binary spike data or spike times
 %   Efficiently creates raster plots with formatting support. Faster than
 %   common implementations. Multiple plot types and parameters available!
@@ -15,6 +15,7 @@ function [xPoints, yPoints] = plotSpikeRaster(spikes,varargin)
 %   Output:
 %       xPoints - vector of x points used for the plot.
 %       yPoints - vector of y points used for the plot.
+%       plotHandle - plot handle
 %
 %   Parameters:
 %       PlotType - default 'horzline'. Several types of plots available:
@@ -161,6 +162,7 @@ end
 
 %% Initialize figure and begin plotting logic
 figure(figH);
+clf;
 hold on;
 
 if islogical(spikes)
@@ -193,7 +195,7 @@ if islogical(spikes)
                     
             xPoints = xPoints(:);
             yPoints = yPoints(:);
-            plot(xPoints,yPoints,'k',lineFormat{:});
+            plotHandle = plot(xPoints,yPoints,'k',lineFormat{:});
         case 'vertline'
             %% Vertical Lines
             % Find the trial (yPoints) and timebin (xPoints) of each spike
@@ -211,7 +213,7 @@ if islogical(spikes)
 
             xPoints = xPoints(:);
             yPoints = yPoints(:);
-            plot(xPoints,yPoints,'k',lineFormat{:});
+            plotHandle = plot(xPoints,yPoints,'k',lineFormat{:});
         case 'horzline2'
             %% Horizontal lines, for many timebins
             % Plots a horizontal line the width of a time bin for each
@@ -265,7 +267,7 @@ if islogical(spikes)
                 end
             end
             
-            plot(xPoints, yPoints,'k', lineFormat{:});
+            plotHandle = plot(xPoints, yPoints,'k', lineFormat{:});
             
         case 'vertline2'
             %% Vertical lines, for many trials
@@ -302,7 +304,7 @@ if islogical(spikes)
                 end
             end
             
-            plot(xPoints, yPoints, 'k', lineFormat{:});
+            plotHandle = plot(xPoints, yPoints, 'k', lineFormat{:});
             
         case 'scatter'
             %% Dots or other markers (scatterplot style)
@@ -310,11 +312,11 @@ if islogical(spikes)
             % spike
             [yPoints,xPoints] = find(spikes==1);
             xPoints = xPoints + relSpikeStartTime;
-            plot(xPoints,yPoints,'.k',markerFormat{:});
+            plotHandle = plot(xPoints,yPoints,'.k',markerFormat{:});
             
         case 'imagesc'
             %% Imagesc
-            imagesc(spikes);
+            plotHandle = imagesc(spikes);
             % Flip the colormap since the default is white for 1, black for
             % 0.
             colormap(flipud(colormap('gray')));
@@ -442,7 +444,7 @@ else % Equivalent to elseif iscell(spikes).
         end
         
         % Plot everything at once! We will reverse y-axis direction later.
-        plot(xPoints, yPoints, 'k', lineFormat{:});
+        plotHandle = plot(xPoints, yPoints, 'k', lineFormat{:});
         
     elseif strcmpi(plotType,'scatter')
         %% Dots or other markers (scatterplot style)
@@ -460,7 +462,7 @@ else % Equivalent to elseif iscell(spikes).
         yPoints = [ trials{:} ];
         
         % Now we can plot! We will reverse y-axis direction later.
-        plot(xPoints,yPoints,'.k',markerFormat{:});
+        plotHandle = plot(xPoints,yPoints,'.k',markerFormat{:});
         
     elseif strcmpi(plotType,'imagesc') || strcmpi(plotType,'vertline2') || strcmpi(plotType,'horzline2')
         error('Can''t use imagesc/horzline2/vertline2 with cell array. Use with logical array of binary spike train data.');
